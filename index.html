@@ -1,0 +1,196 @@
+<script type="text/javascript">
+    var _cio = _cio || [];
+    (function() {
+      var a,b,c;a=function(f){return function(){_cio.push([f].
+      concat(Array.prototype.slice.call(arguments,0)))}};b=["load","identify",
+      "sidentify","track","page"];for(c=0;c<b.length;c++){_cio[b[c]]=a(b[c])};
+      var t = document.createElement('script'),
+          s = document.getElementsByTagName('script')[0];
+      t.async = true;
+      t.id    = 'cio-tracker';
+      t.setAttribute('data-site-id', '907079be014c027ecead');
+      t.src = 'https://assets.customer.io/assets/track.js';
+      s.parentNode.insertBefore(t, s);
+    })();
+</script>
+
+<div class="subscription-container">
+    <form id="subscription-form">
+        <input type="email" id="email" name="email" placeholder="emma@example.com" required>
+        <button type="submit" id="subscribe-button">Subscribe</button>
+    </form>
+</div>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+* {
+font-family: "Inter", sans-serif;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+
+.subscription-container {
+    width: 100%;
+}
+
+form {
+margin: 0;
+}
+
+h2 {
+margin-bottom: 20px;
+}
+
+input[type="email"]::placeholder {
+color: #60646C;
+}
+
+input[type="email"] {
+height: 48px;
+width: 100%;
+padding: 12px;
+margin-bottom: 16px;
+border: 1px solid #F0F0F3;
+border-radius: 6px;   
+transition: border-color 300ms ease;
+background-color: #F0F0F3;
+font-size: 16px;
+box-sizing: border-box;
+
+}
+
+input[type="email"]:focus {
+border-color: #122920;
+outline: none;
+transition: border-color 300ms ease;
+}
+
+button {
+width: 100%;
+padding: 10px;
+border: none;
+background-color: #273E35;
+color: white;
+border-radius: 6px;
+cursor: pointer;
+position: relative;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 48px;
+transition: background-color 300ms ease;
+font-weight: 500;
+font-size: 16px;
+
+}
+
+button:disabled {
+background-color: #273E35;
+cursor: not-allowed;
+transition: background-color 300ms ease;
+
+}
+
+button:hover {
+background-color: #122920;
+transition: background-color 300ms ease;
+
+}
+
+button.loading {
+background-color: #122920;
+cursor: not-allowed;
+transition: background-color 300ms ease;
+
+}
+
+button.loading .spinner {
+position: absolute;
+width: 16px;
+height: 16px;
+border: 2px solid #fff;
+border-top-color: #9CC29B;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+var form = document.getElementById("subscription-form");
+var subscribeButton = document.getElementById("subscribe-button");
+var emailInput = document.getElementById("email");
+var apiKey = "739b5cc891d94c6588365aa31ed4b574";
+
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    var email = emailInput.value;
+
+    if (email) {
+        // Show loading spinner
+        subscribeButton.innerHTML = '<span class="spinner"></span>';
+        subscribeButton.classList.add("loading");
+        subscribeButton.disabled = true;
+
+        // Validate the email with ZeroBounce
+        validateEmail(email, function(isValid) {
+            if (isValid) {
+                // Identify the user
+                _cio.identify({
+                    id: email,
+                    email: email
+                });
+
+                // Send an event to Customer.io
+                _cio.track("events_subscribed", {
+                    email: email
+                });
+
+                // Simulate an async operation
+                setTimeout(function() {
+                    // Display a success message
+                    subscribeButton.classList.remove("loading");
+                    subscribeButton.innerHTML = "Subscribed";
+                    subscribeButton.style.backgroundColor = "#2B9A66";
+                    form.reset();
+
+                    // Revert to default state after 3 seconds
+                    setTimeout(function() {
+                        subscribeButton.innerHTML = "Subscribe";
+                        subscribeButton.style.backgroundColor = "#273E35";
+                        subscribeButton.disabled = false;
+                    }, 3000);
+                }, 2000);
+            } else {
+                subscribeButton.innerHTML = "Invalid Email";
+                subscribeButton.classList.remove("loading");
+                subscribeButton.style.backgroundColor = "#DC3E42";
+                subscribeButton.disabled = false; // Enable the button to allow re-submission
+            }
+        });
+    }
+});
+
+function validateEmail(email, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://api.zerobounce.net/v2/validate?api_key=" + apiKey + "&email=" + encodeURIComponent(email), true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            callback(response.status === "valid");
+        } else {
+            callback(false);
+        }
+    };
+    xhr.onerror = function() {
+        callback(false);
+    };
+    xhr.send();
+}
+});
+</script>
